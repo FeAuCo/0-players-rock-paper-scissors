@@ -84,7 +84,7 @@ def mouse_checks():
         else:
             state_iterator = 0
 
-    if pg.mouse.get_pressed()[1] and len(rps_instances) != 0 and len(rps_instances) != 1:
+    if pg.mouse.get_pressed()[1] and len(rps_instances) != 0 and len(rps_instances) != 1 and not same_material_check():
         global state
         state = 1
         for sprite in rps_instances:
@@ -112,10 +112,17 @@ def movement():
         sprite.render()
 
 
+def same_material_check():
+    return True if all(
+        [True if rps_instances[index].material == rps_instances[index + 1].material else False for index in
+         range(len(rps_instances) - 1)]) else False
+
+
 def fight(first, second):
     global rocks_count
     global papers_count
     global scissors_count
+    global state
     if (first.material == "rock" and second.material == "scissors") or (
             first.material == "scissors" and second.material == "rock"):
         if first.material == "rock":
@@ -158,3 +165,11 @@ def fight(first, second):
     screen_update()
     for rps in rps_instances:
         rps.render()
+    if same_material_check():
+        state = 2
+        pg.draw.rect(surface, "gray", (0, 0, 564, 50))
+        pg.font.init()
+        my_font = pg.font.SysFont('Mojangles', 20)
+        winner_text = my_font.render(f'WINNER: {rps_instances[0].material}', True, (0, 0, 0))
+        surface.blit(winner_text, (225, 20))
+
